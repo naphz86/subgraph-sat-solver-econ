@@ -33,14 +33,16 @@ def _clause_is_satisfied(clause: Sequence[int], assignment: Dict[int, bool]) -> 
     return None
 
 
-def _simplify(clauses: Sequence[Sequence[int]], assignment: Dict[int, bool]) -> List[Tuple[int, ...]]:
+def _simplify(
+    clauses: Sequence[Sequence[int]], assignment: Dict[int, bool]
+) -> Optional[List[Tuple[int, ...]]]:
     simplified: List[Tuple[int, ...]] = []
     for clause in clauses:
         result = _clause_is_satisfied(clause, assignment)
         if result is True:
             continue
         if result is False:
-            return []
+            return None
         reduced = tuple(literal for literal in clause if abs(literal) not in assignment)
         if reduced:
             simplified.append(reduced)
@@ -50,10 +52,10 @@ def _simplify(clauses: Sequence[Sequence[int]], assignment: Dict[int, bool]) -> 
 def _dpll(clauses: Sequence[Sequence[int]], assignment: Optional[Dict[int, bool]] = None) -> Optional[Dict[int, bool]]:
     assignment = {} if assignment is None else dict(assignment)
     simplified = _simplify(clauses, assignment)
+    if simplified is None:
+        return None
     if not simplified:
         return assignment
-    if any(len(clause) == 0 for clause in simplified):
-        return None
 
     unit_literals = [clause[0] for clause in simplified if len(clause) == 1]
     if unit_literals:
@@ -75,7 +77,7 @@ def _dpll(clauses: Sequence[Sequence[int]], assignment: Optional[Dict[int, bool]
 
 def solve_cnf(clauses: Sequence[Sequence[int]]) -> SATResult:
     """Solve a CNF formula via a small DPLL procedure."""
-    normalized = [tuple(int(literal) for literal in clause) for clause in clauses if clause]
+    normalized = [tuple(int(literal) for literal in clause) for clause in clauses]
     if not normalized:
         return SATResult(satisfiable=True, assignment={}, explanation="empty formula")
     assignment = _dpll(normalized)

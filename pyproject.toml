@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "subgraph-sat-solver-econ"
-version = "1.0.0"
+version = "2.0.0"
 description = "Wirtschaftliche Modelle als SAT-Probleme in Python mit dem subgraph-sat-solver"
 authors = [
     { name = "Stephan Epp" }
@@ -34,9 +34,10 @@ omit = [
 ]
 
 [tool.pytest.ini_options]
+minversion = "6.0"
 testpaths = ["tests"]
 pythonpath = [".", "src"]
-addopts = "--cov=src --cov-report=html:doc/coverage --cov-report=term-missing"
+addopts = "-q --cov=src --cov-report=html:doc/coverage --cov-report=term-missing"
 markers = [
     "unit: unit test",
     "integration: component integration test",

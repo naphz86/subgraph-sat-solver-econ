@@ -2,6 +2,11 @@
 
 Python-Implementierung der Konstruktionen aus der wissenschaftlichen Arbeit „Wirtschaftliche Konsequenzen eines effizienten SAT-Solvers". Das Projekt kodiert ökonomische Entscheidungsprobleme (Auktionen, Märkte, Planung, Konfiguration, Spiele, Wahlen) als SAT-Instanzen und löst sie mit austauschbaren SAT-Entscheidern. Einer dieser Entscheider ist die Reduktionskette des Projekts subgraph-sat-solver (CNF → 3-SAT → Clique → Subgraph). Die theoretische Grundlage ist die Arbeit des Autors, siehe [Wissenschaftlicher Hintergrund](#wissenschaftlicher-hintergrund).
 
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB)](https://www.python.org/)
+[![Tests](https://img.shields.io/badge/Tests-69%20passed-4c1)](tests/)
+[![Test Coverage](https://img.shields.io/badge/Test%20Coverage-97%25-brightgreen)](doc/coverage/index.html)
+[![scicov](https://img.shields.io/badge/scicov-10-ff69b4)](doc/coverage/index.html)
+
 ## Inhaltsverzeichnis
 
 - [Überblick](#überblick)
@@ -435,17 +440,11 @@ pytest
 
 Die Konfiguration in `pyproject.toml` setzt `tests` als Testverzeichnis, `.` und `src` als Importpfade und erzeugt einen Coverage-Bericht im Terminal sowie als HTML unter `doc/coverage/`.
 
-Stand der Testsuite: Die Testdateien in `tests/` stammen aus einem früheren Stand der Programmierschnittstelle und sind nicht an die aktuellen Module angepasst. Im Einzelnen:
-
-- `tests/conftest.py` enthält Konfigurationstext im Stil einer `pytest.ini` anstelle von Python-Code. Beim Laden entsteht ein `NameError`, sodass pytest abbricht.
-- Neun der zehn Testmodule importieren Funktionen der früheren Schnittstelle (zum Beispiel `SATModel`, `encode_job_schedule`, `FreshVarGenerator`) und verwenden flache Importe, die zu den relativen Importen in `src/` nicht passen. Nur `tests/test_solver.py` lässt sich importieren.
-
-Eine Anpassung der Testsuite an die aktuelle Schnittstelle steht aus. Die Beispiele in dieser README sind lauffähig und können als Ausgangspunkt für neue Tests dienen.
+Die Python-Tests verwenden `DpllBackend` und `ChainBackend` als Referenzentscheider. Die Integrationstests in `tests/test_native_integration.py` rufen zusätzlich die bereits gebauten C++-Testsuiten `sat-tests` und `subgraph-tests` sowie die `subgraph`-CLI auf. Standardmäßig werden die benachbarten Checkouts `../subgraph-sat-solver/build` und `../csubgraph/build` verwendet. Andere Build-Verzeichnisse können über `SUBGRAPH_SAT_SOLVER_BUILD_DIR` und `CSUBGRAPH_BUILD_DIR` angegeben werden. Fehlt ein Build-Artefakt, wird der jeweilige Integrationstest übersprungen.
 
 ## Bekannte Einschränkungen
 
-- **Testsuite:** Siehe [Tests](#tests). Die Coverage-Angaben aus `pyproject.toml` beziehen sich auf eine funktionsfähige Testsuite und sind daher derzeit nicht aussagekräftig.
-- **Native Anbindung im flachen Layout:** In `src/native.py` sind `REPO_ROOT` und `NATIVE_DIR` sowie das von `oracle.make_launcher` erzeugte Startskript (Import `subgraph_sat_wirtschaft.oracle`) auf eine frühere Paketstruktur ausgelegt. Deshalb funktionieren `build_shim()` und das Standard-Startskript von `NativeBackend` im aktuellen Layout nicht. Abhilfe: Shim wie im Abschnitt [Anbindung des C++-Solvers](#anbindung-des-c-solvers) manuell bauen und `subgraph_binary` ausdrücklich angeben. Die native Anbindung wird von der Testsuite nicht abgedeckt.
+- **Native Python-Anbindung:** Die C++-Komponenten werden über ihre C++-Testsuiten und die Subgraph-CLI geprüft. `src/native.py` und der ctypes-Shim werden derzeit nicht direkt von pytest abgedeckt; `build_shim()` und das Standard-Startskript von `NativeBackend` passen im flachen Layout nicht zur aktuellen Paketstruktur. Für die manuelle Anbindung muss der Shim wie im Abschnitt [Anbindung des C++-Solvers](#anbindung-des-c-solvers) gebaut und `subgraph_binary` ausdrücklich angegeben werden.
 - **Altbestand:** `src/solver.py` ist ein älterer eigenständiger DPLL-Löser, der von den Entscheidern nicht verwendet wird und Formeln mit widersprüchlichen Einheitsklauseln fälschlich als erfüllbar meldet. Verwendet werden sollte `DpllBackend`. `src/market.py` ist durch `src/markets.py` ersetzt und nicht importierbar. `src/native/subgraph_sat_solver_shim.cpp` ist ein Stub und nicht Teil des CMake-Builds.
 - **Laufzeit:** Das exakte Orakel ist im ungünstigen Fall exponentiell. Die in der Arbeit betrachtete Laufzeitschranke O(N³) beruht auf der Hypothese (S₃) und ist hier nicht implementiert. Die Python-Kette ist für Konstruktionsnachweise und Messungen auf kleinen bis mittleren Instanzen gedacht. `BruteForceBackend` ist auf 22 Variablen begrenzt.
 - **Größe der Reduktion:** Der Clique-Graph besitzt einen Knoten je Literalvorkommen der 3-CNF. Die Zahl der Kanten kann quadratisch mit der Knotenzahl wachsen.
