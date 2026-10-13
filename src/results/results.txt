@@ -1,0 +1,32 @@
+(venv) PS C:\Users\Internet\Git\subgraph-sat-solver-econ> python.exe .\src\experiments.py
+Python: 3.13.16 (Windows-11-10.0.26300-SP0)
+C++ Solver: C:\Users\Internet\Git\subgraph-sat-solver
+Subgraph-Programm: C:\Users\Internet\Git\csubgraph\build\subgraph.exe
+Seed: 20261013; Wiederholungen je Größe: 3
+Native Shim: C:\Users\Internet\Git\subgraph-sat-solver-econ\build\experiment-native\libwsat_shim.dll
+auctions           size= 3 rep=1/3: opt=25, native=1034.54 ms (ok), DPLL=2.25 ms
+auctions           size= 3 rep=2/3: opt=20, native=1080.84 ms (ok), DPLL=3.71 ms
+auctions           size= 3 rep=3/3: opt=20, native=1085.08 ms (ok), DPLL=2.82 ms
+auctions           size= 4 rep=1/3: opt=30, native=1415.73 ms (ok), DPLL=9.57 ms
+auctions           size= 4 rep=2/3: opt=32, native=1014.17 ms (ok), DPLL=5.61 ms
+auctions           size= 4 rep=3/3: opt=25, native=1451.33 ms (ok), DPLL=6.24 ms
+auctions           size= 5 rep=1/3: opt=42, native=13009.62 ms (ok), DPLL=7.53 ms
+auctions           size= 5 rep=2/3: opt=14, native=1310.52 ms (ok), DPLL=7.38 ms
+auctions           size= 5 rep=3/3: opt=36, native=1098.07 ms (ok), DPLL=6.07 ms
+auctions           size= 6 rep=1/3: opt=34, native=1858.51 ms (ok), DPLL=16.10 ms
+auctions           size= 6 rep=2/3: opt=48, native=7560.90 ms (ok), DPLL=14.35 ms
+Error: Zeitlimit ueberschritten
+Subgraph binary execution failed with code: 3
+auctions           size= 6 rep=3/3: opt=TIMEOUT/ERROR, native=96961.38 ms (error), DPLL=15.75 ms
+repacking          size= 3 rep=1/3: opt=1, native=49.79 ms (ok), DPLL=0.12 ms
+repacking          size= 3 rep=2/3: opt=1, native=47.33 ms (ok), DPLL=0.15 ms
+repacking          size= 3 rep=3/3: opt=1, native=41.01 ms (ok), DPLL=0.12 ms
+repacking          size= 4 rep=1/3: opt=1, native=55.32 ms (ok), DPLL=0.23 ms
+repacking          size= 4 rep=2/3: opt=1, native=50.13 ms (ok), DPLL=0.16 ms
+repacking          size= 4 rep=3/3: opt=1, native=47.11 ms (ok), DPLL=0.22 ms
+repacking          size= 5 rep=1/3: opt=1, native=50.07 ms (ok), DPLL=0.18 ms
+repacking          size= 5 rep=2/3: opt=1, native=53.15 ms (ok), DPLL=0.23 ms
+repacking          size= 5 rep=3/3: opt=1, native=48.86 ms (ok), DPLL=0.18 ms
+repacking          size= 6 rep=1/3: opt=1, native=52.77 ms (ok), DPLL=0.32 ms
+repacking          size= 6 rep=2/3: opt=1, native=56.71 ms (ok), DPLL=0.37 ms
+repacking          size= 6 rep=3/3: opt=1, native=54.02 ms (ok), DPLL=0.28 ms

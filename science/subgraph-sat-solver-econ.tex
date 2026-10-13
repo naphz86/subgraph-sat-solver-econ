@@ -1,13 +1,8 @@
 \documentclass[a4paper,12pt]{article}
-% XeLaTeX: Unicode nativ
-% babel-german ist auf diesem System nicht installiert: Anfuehrungszeichen von Hand
-\providecommand{\glqq}{\quotedblbase{}}
-\providecommand{\grqq}{\textquotedblleft{}}
-\usepackage{fontspec}
-\setmainfont{Latin Modern Roman}
-\setsansfont{Latin Modern Sans}
-\setmonofont{Latin Modern Mono}
-
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{geometry}
 \usepackage{graphicx}
@@ -40,6 +35,11 @@
   \renewcommand{\subsectionautorefname}{Abschnitt}%
 }
 
+\newcommand{\experimenthardware}{%
+	\par\smallskip\noindent
+	\textbf{Hardwareplattform der lokal ausgeführten Experimente:} Rechner \texttt{WBIS-H207085} von LENOVO, Modell \texttt{10T8S6LB00}, mit $7{,}87\,\mathrm{GB}$ Arbeitsspeicher; ein Intel-Core-i3-8100T-Prozessor mit $3{,}10\,\mathrm{GHz}$, vier physischen Kernen und vier logischen Prozessoren (x64); Microsoft Windows 11 Pro, 64-Bit, Version $10.0.26200$.
+	\par\smallskip}
+	
 \emergencystretch=4em
 \setlist[itemize,1]{label=--}
 
@@ -114,8 +114,7 @@
 }
 
 \title{\textbf{Wirtschaftliche Konsequenzen eines effizienten SAT-Solvers}\\[0.4em]
-\Large Entscheidungstheorie, Auktionen, Märkte, Produktion und Sicherheit\\[0.4em]
-\large Ergänzende Kapitel zur Arbeit \glqq SAT-Erfüllbarkeit von booleschen Schaltkreisen und die Konsequenzen\grqq}
+\Large Entscheidungstheorie, Auktionen, Märkte,\\Produktion und Sicherheit}
 \author{\textsc{Stephan Epp}\\ {\small \texttt{\textbf{M.Sc.}}}}
 \date{12. Oktober 2026}
 
@@ -169,6 +168,7 @@ Beweise werden für alle Aussagen der Typen \tU{} und \tK{} vollständig geführ
 
 \subsection{Aufbau}
 Kapitel~\ref{eco:foundation} legt das formale Fundament (Tseitin-Kodierung, Selbstreduzierbarkeit, Optimierung aus Entscheidung). Kapitel~\ref{eco:decision} behandelt die Entscheidungstheorie unter Sicherheit, Risiko und Unsicherheit. Kapitel~\ref{eco:auctions} behandelt kombinatorische Auktionen und Mechanismen, Kapitel~\ref{eco:matching} Märkte mit Nebenbedingungen (Frequenzzuteilung, Tauschmärkte). Kapitel~\ref{eco:production} betrifft Produktion, Logistik und Konfiguration. Kapitel~\ref{eco:games} behandelt Spiele, Gleichgewichte und kollektive Entscheidungen, Kapitel~\ref{eco:crypto} die Folgen für Kryptographie und Zahlungsverkehr. Kapitel~\ref{eco:welfare} bildet ein gesamtwirtschaftliches Wohlfahrtsmodell, Kapitel~\ref{eco:limits} grenzt ab und gibt einen Messplan.
+Kapitel~\ref{eco:experiments} enthält jeweils eine kurze Einführung in die ökonomische Problemklasse, die Reduktion auf SAT, die Kodierung der Zielfunktion und die experimentelle Auswertung.
 
 \begin{figure}[ht]
 \centering
@@ -466,7 +466,7 @@ Der Engpass „Auswertung“ entfällt, nicht aber: (i) \emph{Kommunikation}: f�
 \end{bemerkung}
 
 %%% ===================================================================
-\section{Märkte mit Nebenbedingungen: Frequenzzuteilung und Tauschmärkte}
+\section{Frequenzzuteilung und Tauschmärkte}
 \label{eco:matching}
 
 \subsection{Station Repacking (FCC-Anreizauktion)}
@@ -612,8 +612,118 @@ Zur Zuteilung \(L\) unteilbarer Güter an zwei Agenten mit allgemeinen Bewertung
 Rechenleistung ersetzt also nicht das Wissensproblem \cite{hayek1945}: Ein exakter Solver löst „Gegeben die Daten, plane optimal“ (ganzzahlig NP-schwer, linear polynomiell \cite{khachiyan1979}), nicht „Wie gelangen die verteilten Daten zum Planer?“ \cite{mises1920,hurwicz1972}. Das Rechenargument gegen zentrale Planung würde geschwächt, das Informations- und Anreizargument bleibt bestehen. Ebenso senkt \(\Epoly\) die rechnerischen Transaktionskosten im Sinne von \cite{coase1937} für Vertragsgestaltung in NP, nicht aber Verhandlungs- und Informationskosten. Marktstrukturelle Folgen (Konzentration bei Zugang zum Solver) sind eine offene, nicht formalisierte Frage.
 
 %%% ===================================================================
+\section{Experimente mit Subgraph-SAT-Solver}
+\label{eco:experiments}
+
+\experimenthardware
+
+\subsection{Ziel und Versuchsaufbau}
+Dieses Kapitel ergänzt die Reduktionsbeweise um eine ausführbare Messreihe. Sie veranschaulicht, wie ökonomische Modelle aus dem Repository in SAT-Abfragen übersetzt und vom nativen C++-Projekt \texttt{subgraph-sat-solver} beantwortet werden. Der Versuchsplan umfasst sechs Problemfamilien: Winner Determination in kombinatorischen Auktionen, Frequenzzuteilung als Repacking, gewichtete Einmaschinenplanung, unkapazitiertes Standortproblem, Nierenaustausch als Zyklenpackung und Kemeny-Rangaggregation. Der hier ausgewertete Datenstand enthält Ergebnisse für zwei dieser Familien; die übrigen vier werden nicht als durchgeführte Messungen dargestellt. Die generierten Instanzgrößen variieren je Familie; mehrere feste Zufallsseeds verhindern, dass eine einzelne günstige Instanz den Verlauf bestimmt.
+
+Für jede erzeugte Instanz wird derselbe ökonomische Löser einmal mit \texttt{NativeBackend} (C++-Bibliothek \texttt{satlib} über den C-ABI-Shim und das externe \texttt{csubgraph}-Programm) und einmal mit dem unabhängigen Python-\texttt{DpllBackend} ausgeführt. Die Python-Ausführung ist eine Referenz und ausdrücklich kein Ersatz oder Fallback für den nativen Solver. Der Lauf bricht ab, wenn CMake, Shim, Subgraph-Programm oder eine native SAT-Antwort fehlschlagen. Es werden somit keine als C++-Ergebnisse ausgegebenen Python-Fallback-Messungen erzeugt.
+
+Die ökonomischen Optimierungsroutinen verwenden wiederholt Entscheidungsabfragen, um optimale Zielfunktionswerte zu bestimmen und Lösungen selbstreduzierend zu rekonstruieren. Die Zeitangaben umfassen den vollständigen Aufruf des jeweiligen ökonomischen Lösers einschließlich dieser Abfragen. Zusätzlich erfasst der Messadapter die Anzahl der SAT-Aufrufe, die größte beobachtete einzelne CNF-Abfrage und für den nativen Solver die aufsummierten Phasenzeiten für Reduktion, Subgraph-Entscheidung und Extraktion. Pro Instanz muss der vom Modul gemeldete Aufrufzähler mit der tatsächlich beobachteten Zahl übereinstimmen. Der native und der Referenzlauf müssen denselben Zielfunktionswert liefern; ausgegebene Lösungen werden außerdem anhand der jeweiligen ökonomischen Zulässigkeitsbedingungen nachgeprüft.
+
+\subsection{Instanzfamilien}
+\begin{description}[leftmargin=3.6cm,style=nextline]
+\item[Auktionen.] Zufällig erzeugte Bündelgebote mit überlappenden Gütern und XOR-Bietern; maximiert wird der Gesamterlös bei zulässiger Gewinnerauswahl. Die Instanzgröße ist die Gebotszahl.
+\item[Frequenzzuteilung.] Repacking-Instanzen mit drei Kanälen und zufälligen Interferenzbedingungen. Jede erzeugte Instanz besitzt eine konstruierte zulässige Färbung, sodass der Test eine echte, überprüfte Zuteilung statt eines bloßen UNSAT-Ergebnisses verlangt.
+\item[Terminplanung.] Jobs haben Freigabezeiten, Bearbeitungsdauern und Gewichte. Minimiert wird die gewichtete Fertigstellungszeit unter Einmaschinen- und Zeitfensterbedingungen.
+\item[Standortplanung.] Zufällige Eröffnungs- und Zuordnungskosten für Fabriken und Kunden; minimiert werden die gesamten Kosten eines zulässigen Standort- und Zuordnungsplans.
+\item[Nierenaustausch.] Gerichtete Spender-Empfänger-Graphen werden in knotendisjunkte Zyklen der Länge höchstens drei zerlegt. Maximiert wird die Summe der Gewichte der ausgeführten Austausche.
+\item[Kemeny-Rangaggregation.] Zufällige vollständige Stimmzettel werden zu paarweisen Präferenzgewichten aggregiert. Gesucht wird eine Konsensrangfolge mit minimaler gewichteter Kendall-Tau-Kostenfunktion.
+\end{description}
+
+Die Instanzen sind synthetisch und dienen der technischen Veranschaulichung, nicht als empirische Stichprobe realer Auktionen, Frequenzmärkte, Produktionsbetriebe oder Transplantationsnetzwerke. Das vermeidet eine Interpretation der Zufallsdaten als beobachtete wirtschaftliche Effekte. Die Generierung ist deterministisch: Startseed, Instanzseed und Wiederholungsindex sind in jeder JSON-Datei enthalten.
+
+\subsection{Messwerte}
+Der gegenwärtig gespeicherte Datenstand umfasst zwei abgeschlossene Problemfamilien: Auktionen und Repacking. Für jede der beiden Familien liegen vier Größenstufen mit je drei Wiederholungen vor, insgesamt also 24 Instanzläufe. Die weiteren vier im Skript vorgesehenen Familien (Terminplanung, Standortplanung, Nierenaustausch und Kemeny-Rangaggregation) sind in den vorliegenden Ergebnisdateien noch nicht enthalten und werden deshalb nicht als gemessene Resultate ausgewertet. Die Rohdaten und die aus ihnen berechneten Kennzahlen stehen in \texttt{src/results/auctions.json} und \texttt{src/results/repacking.json}.
+
+Tabelle~\ref{tab:eco-experiment-runtime} gibt für jede Größe die Medianlaufzeit des nativen Backends und des Python-DPLL an. Native Laufzeiten sind Ende-zu-Ende-Zeiten erfolgreicher Läufe; bei sechs Geboten wird daher der Median der zwei erfolgreichen nativen Wiederholungen ausgewiesen. Die DPLL-Spalte enthält den Median aller drei entsprechenden Läufe. Die CNF-Größe ist der Median der jeweils größten einzelnen SAT-Abfrage in einer Optimierung, nicht die Größe der Summe aller Abfragen.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{llrrrr}
+\toprule
+Problemfamilie & Größe & Nat. Median & DPLL Median & SAT-Aufrufe & Nat. Erfolge\\
+ & & \multicolumn{1}{c}{(ms)} & \multicolumn{1}{c}{(ms)} & \multicolumn{1}{c}{(Median)} & \multicolumn{1}{c}{(/3)}\\
+\midrule
+Auktion & 3 Gebote & 1080{,}8 & 2{,}82 & 11 & 3\\
+Auktion & 4 Gebote & 1415{,}7 & 6{,}24 & 13 & 3\\
+Auktion & 5 Gebote & 1310{,}5 & 7{,}38 & 14 & 3\\
+Auktion & 6 Gebote & 4709{,}7 & 15{,}75 & 15 & 2\\
+\midrule
+Repacking & 3 Stationen & 47{,}3 & 0{,}12 & 1 & 3\\
+Repacking & 4 Stationen & 50{,}1 & 0{,}22 & 1 & 3\\
+Repacking & 5 Stationen & 50{,}1 & 0{,}18 & 1 & 3\\
+Repacking & 6 Stationen & 54{,}0 & 0{,}32 & 1 & 3\\
+\bottomrule
+\end{tabular}
+\caption{Medianlaufzeiten und native Abschlusszahlen je Familiengröße. Die kleinformatigen DPLL-Zeiten sind in Millisekunden angegeben; sie sind nicht mit der Subgraph-Startlatenz des nativen Pfads gleichzusetzen.}
+\label{tab:eco-experiment-runtime}
+\end{table}
+
+Bei Auktionen steigen die Medianwerte der größten Einzel-CNF-Abfrage von \(21\) Variablen, \(64\) Klauseln und \(163\) Literalvorkommen bei drei Geboten auf \(89\), \(295\) und \(774\) bei sechs Geboten. Die mediane Zahl der SAT-Aufrufe nimmt gleichzeitig von \(11\) auf \(15\) zu: Neben den steigenden Formelkosten wird also auch die Optimierungsschleife häufiger aufgerufen. Die Laufzeit reagiert allerdings nicht glatt auf die Eingabegröße. Bei fünf Geboten ist der Median \(1{,}31\) Sekunden, bei sechs Geboten \(4{,}71\) Sekunden unter den erfolgreichen Läufen. Schon bei fünf Geboten streuen die drei nativen Laufzeiten stark: eine Wiederholung benötigt etwa \(13{,}01\) Sekunden, während die beiden anderen etwa \(1{,}10\) und \(1{,}31\) Sekunden benötigen. Ein günstiger Median verdeckt somit einzelne schwierige Instanzen.
+
+Bei Repacking wächst die größte Einzel-CNF über dieselben Größenstufen von \(9/12/27\) (Variablen/Klauseln/Literalvorkommen) auf \(18/39/84\). Es genügt jeweils ein SAT-Aufruf; die native Ende-zu-Ende-Zeit steigt in der kleinen Stichprobe von ungefähr \(47\) auf \(54\) Millisekunden. Die Messung wird hier weitgehend von der festen Aufruf- und Prozessstartlatenz des Subgraph-Programms bestimmt, nicht von einer großen Suchinstanz.
+
+Über die 23 erfolgreich beantworteten nativen Fälle stimmen die optimalen Zielfunktionswerte mit Python-DPLL überein; alle zurückgegebenen ökonomischen Lösungen bestanden die im Experiment ausgeführte Zulässigkeitsprüfung. Der verbleibende Fall ist eine Auktion mit sechs Geboten: Der native Aufruf lieferte einen Fehler durch Überschreitung des Subgraph-Zeitlimits, bevor ein Ergebnis vorlag. Der gesamte ökonomische Aufruf dauerte dabei \(96{,}96\) Sekunden und scheiterte während des achten SAT-Aufrufs. Das gesetzte Limit von 60 Sekunden gilt pro Subgraph-Instanz, nicht als Gesamtlimit für die Folge von SAT-Aufrufen einer Optimierung. Ein Timeout ist keine UNSAT-Antwort und darf nicht als gelöster Fall gewertet werden.
+
+In den erfolgreichen Läufen dominiert die Subgraph-Phase die vom nativen Solver ausgewiesenen Phasenzeiten: Der Median der aufsummierten Subgraph-Zeit beträgt rund \(1{,}09\) Sekunden bei Auktionen und \(49{,}48\) Millisekunden bei Repacking. Die entsprechenden Reduktionsmediane betragen etwa \(210\) Millisekunden beziehungsweise \(0{,}29\) Millisekunden; die Extraktion bleibt mit etwa \(0{,}23\) beziehungsweise \(0{,}01\) Millisekunden klein. Bezogen auf die Summe der aggregierten Phasenmediane entfallen damit rund \(84\,\%\) bei Auktionen und \(99\,\%\) bei Repacking auf den Subgraph-Aufruf. Bei Auktionen ist die Reduktion durch die wiederholte, wachsende CNF ebenfalls messbar. Diese Phasenwerte summieren sich über die SAT-Aufrufe einer Optimierung und sind nicht die Laufzeit eines einzelnen Aufrufs.
+
+Auf diesen kleinen Instanzen ist der native vollständige Pfad langsamer als der direkte Python-DPLL: Der Median der gepaarten nativen/DPLL-Laufzeitverhältnisse beträgt etwa \(232\) bei Auktionen und \(256\) bei Repacking. Das ist kein Widerspruch zur Verwendung der C++-Bibliothek: Der native Pfad führt für jede Abfrage Reduktion, Graphserialisierung und einen externen Subgraph-Prozess aus; DPLL löst dieselbe kleine CNF unmittelbar im Prozess. Die vorliegenden Größen sind zu klein, um mögliche Vorteile auf größeren oder strukturell andersartigen Formeln abzubilden. Der Vergleich belegt daher weder einen allgemeinen Leistungsvergleich der Algorithmen noch einen Vorteil des nativen Backends.
+
+Abbildung~\ref{fig:eco-experiment-runtime} zeigt die Medianlaufzeiten logarithmisch. Ein rotes Kreuz markiert die nicht abgeschlossene Auktionsinstanz; der Punkt ist ihre verstrichene Fehlerzeit, kein erfolgreicher Lösungswert. Abbildung~\ref{fig:eco-experiment-cnf} stellt die größte Einzel-CNF der jeweiligen Optimierung dar.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.92\textwidth]{../src/results/experiment_runtime.pdf}
+\caption{Median der Ende-zu-Ende-Laufzeit in den gemessenen Auktionen und Repacking-Instanzen. Das Kreuz kennzeichnet einen abgebrochenen nativen Lauf.}
+\label{fig:eco-experiment-runtime}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.92\textwidth]{../src/results/experiment_formula_size.pdf}
+\caption{Größe der größten SAT-Abfrage je Instanz, gemessen in Variablen, Klauseln und Literalvorkommen.}
+\label{fig:eco-experiment-cnf}
+\end{figure}
+
+Abbildung~\ref{fig:eco-experiment-phases} zerlegt die gemessene Arbeit des nativen Solvers nach den von ihm berichteten Phasen. Diese Werte summieren sich über die SAT-Aufrufe einer ökonomischen Optimierung. Sie sind daher nicht direkt mit der Laufzeit eines einzelnen SAT-Aufrufs gleichzusetzen; der äußere Ende-zu-Ende-Wert enthält außerdem Python-Modellierung, ctypes-Übergänge und Selbstreduktion.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.7\textwidth]{../src/results/experiment_native_phases.pdf}
+\caption{Median der aufsummierten nativen Reduktions-, Subgraph- und Extraktionszeiten je erfolgreicher Instanz.}
+\label{fig:eco-experiment-phases}
+\end{figure}
+
+Abbildung~\ref{fig:eco-experiment-completion} ergänzt die Laufzeitgrafik um die Abschlussquote: Bei Auktionen wurden \(11\) von \(12\) nativen Fällen abgeschlossen, bei Repacking \(12\) von \(12\). Alle Rohmessungen einschließlich Seeds, Instanzgrößen, Zielfunktionswerten, Aufrufzahlen, CNF-Größen und nativen Phasenzeiten sind einzeln als JSON unter \texttt{src/results/} abgelegt. Die Abbildungen werden aus diesen Daten durch \texttt{src/experiments.py} mit Matplotlib erzeugt.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{../src/results/experiment_completion.pdf}
+\caption{Anteil der nativen Instanzläufe mit vollständig zurückgegebenem Ergebnis (Zeitlimit je Subgraph-Entscheidung: 60 Sekunden).}
+\label{fig:eco-experiment-completion}
+\end{figure}
+
+Die Messungen wurden unter Windows 11 mit Python 3.13.16, dem MinGW-C++-Compiler und den benachbarten Checkouts von \texttt{subgraph-sat-solver} und \texttt{csubgraph} ausgeführt. Die Instanzen sind durch feste Seeds reproduzierbar; Hardwaremodell und weitere Systemlast sind in den Ergebnisdateien jedoch nicht dokumentiert. Die Laufzeiten sind daher als Messwerte dieser konkreten Umgebung und nicht als universelle Kennzahlen zu lesen. Der native Pfad lief im exakten Modus; die unabhängige Referenz war der Python-DPLL aus dem Repository, kein optimierter CDCL-Solver.
+
+Reproduktion aus dem Repository-Wurzelverzeichnis:
+\begin{lstlisting}[language=bash]
+python -m pip install -e .
+python -m src.experiments --seed 20261013 --repetitions 3 --timeout-sec 60
+\end{lstlisting}
+Der Lauf baut den Shim gegen den benachbarten Checkout \texttt{../subgraph-sat-solver} und erwartet \texttt{../csubgraph/build/subgraph.exe}; alternative Orte sind über \texttt{--solver-dir} und \texttt{--subgraph-binary} angebbar. Jede abgeschlossene Instanz wird sofort in ihrer JSON-Datei gespeichert. Ein Timeout wird als Fehler protokolliert und nicht in UNSAT umgedeutet. Der vollständige Lauf erzeugt JSON-Dateien pro Familie und die PDF-Abbildungen unter \texttt{science/figures/}; nicht durchgeführte Familien dürfen dabei nicht als gemessene Resultate interpretiert werden.
+
+\subsection{Interpretation und Grenzen}
+Die Ergebnisse sind eine technische Machbarkeits- und Kostenaufnahme für zwei Modulbeispiele, keine repräsentative ökonomische Stichprobe. Vier der vorgesehenen Problemfamilien fehlen noch, die Fallzahlen pro Größe betragen nur drei, und die Auktionen zeigen bereits einen Timeout sowie stark streuende Laufzeiten. Weder lässt sich daraus auf große Märkte extrapolieren noch ein allgemeiner Leistungsvergleich von C++ und Python ableiten. Insbesondere belegen die Messungen nicht die Effizienzhypothese \(\Epoly\) oder eine polynomielle Laufzeit des Subgraph-Orakels. Ihr positiver Befund ist enger: Für 23 erfolgreich abgeschlossene synthetische Instanzen stimmen der native Solver und DPLL im Optimalwert überein, und die ausgegebenen Lösungen sind in den getesteten Modulen zulässig. Zugleich macht der hohe Anteil der Subgraph-Phase die Prozess- und Suchkosten des aktuellen nativen Integrationspfads sichtbar.
+
+%%% ===================================================================
 \section{Grenzen, Messplan und Fazit}
 \label{eco:limits}
+
+Tabelle \ref{tab:grenzen} fasst die Reichweite der Ergebnisse zusammen. Die Spalte „Problemklasse“ nennt die Komplexitätsklasse, die Spalte „Beispiel“ ein ökonomisches Problem, das in dieser Klasse liegt, und die Spalte „Wirkung von \(\Epoly\)“ beschreibt, ob und wie die Annahme \(\Epoly\) das Problem beeinflusst. Die Tabelle ist nicht erschöpfend; sie zeigt exemplarisch, dass \(\Epoly\) alle Probleme in \cNP{} und der Polynomialzeithierarchie betrifft, aber nicht Zähl- und \cPSPACE-Probleme, Informationsprobleme oder kryptographische Aufgaben.
 
 \begin{table}[ht]
 \centering\small

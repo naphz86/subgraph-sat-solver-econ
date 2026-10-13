@@ -25,8 +25,8 @@ from .oracle import make_launcher
 ABI_VERSION = 1
 WSAT_UNSAT, WSAT_SAT, WSAT_UNKNOWN, WSAT_ERROR = 0, 1, -1, -2
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-NATIVE_DIR = Path(__file__).resolve().parent.parent / "native"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+NATIVE_DIR = Path(__file__).resolve().parent / "native"
 DEFAULT_SOLVER_DIR = REPO_ROOT / "third_party" / "subgraph-sat-solver"
 ENV_SOLVER_DIR = "SUBGRAPH_SAT_SOLVER_DIR"
 ENV_SHIM_PATH = "WSAT_SHIM_PATH"
@@ -82,7 +82,8 @@ def library_filename() -> str:
     return "libwsat_shim.so"
 
 
-def build_shim(build_dir: os.PathLike, solver_dir: Optional[os.PathLike] = None) -> Path:
+def build_shim(build_dir: os.PathLike, solver_dir: Optional[os.PathLike] = None,
+               cmake_generator: Optional[str] = None) -> Path:
     """Baut den Shim mit CMake und gibt den Pfad der Bibliothek zurück."""
     source = find_solver_dir(solver_dir)
     if source is None:
@@ -94,9 +95,14 @@ def build_shim(build_dir: os.PathLike, solver_dir: Optional[os.PathLike] = None)
     build = Path(build_dir)
     build.mkdir(parents=True, exist_ok=True)
     try:
+        configure = [
+            "cmake", "-S", str(NATIVE_DIR), "-B", str(build),
+            f"-DSUBGRAPH_SAT_SOLVER_DIR={source}", "-DCMAKE_BUILD_TYPE=Release",
+        ]
+        if cmake_generator:
+            configure.extend(["-G", cmake_generator])
         subprocess.run(
-            ["cmake", "-S", str(NATIVE_DIR), "-B", str(build),
-             f"-DSUBGRAPH_SAT_SOLVER_DIR={source}", "-DCMAKE_BUILD_TYPE=Release"],
+            configure,
             check=True, capture_output=True, text=True,
         )
         subprocess.run(["cmake", "--build", str(build), "-j", "4"],
@@ -104,6 +110,10 @@ def build_shim(build_dir: os.PathLike, solver_dir: Optional[os.PathLike] = None)
     except subprocess.CalledProcessError as exc:
         raise NativeUnavailable(f"Build des Shims fehlgeschlagen:\n{exc.stdout}\n{exc.stderr}") from exc
     lib = build / library_filename()
+    if not lib.is_file() and sys.platform == "win32":
+        mingw_library = build / "libwsat_shim.dll"
+        if mingw_library.is_file():
+            lib = mingw_library
     if not lib.is_file():
         raise NativeUnavailable(f"Bibliothek nicht erzeugt: {lib}")
     return lib
@@ -116,6 +126,11 @@ class NativeLibrary:
     """Geladene Shim-Bibliothek (dünner ctypes-Wrapper um ``wsat_solve``)."""
 
     def __init__(self, path: os.PathLike) -> None:
+        self._dll_directory_handles = []
+        if sys.platform == "win32" and hasattr(os, "add_dll_directory"):
+            for directory in os.environ.get("PATH", "").split(os.pathsep):
+                if directory and Path(directory).is_dir():
+                    self._dll_directory_handles.append(os.add_dll_directory(directory))
         try:
             self._lib = ctypes.CDLL(str(path))
         except OSError as exc:

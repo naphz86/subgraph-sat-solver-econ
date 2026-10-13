@@ -4,13 +4,14 @@ Python-Modelle ökonomischer Entscheidungsprobleme treffen hier auf einen leistu
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/Tests-72%20passed-4c1)](tests/)
-[![Test Coverage](https://img.shields.io/badge/Test%20Coverage-91%25-brightgreen)](doc/coverage/index.html)
+[![Test Coverage](https://img.shields.io/badge/Test%20Coverage-97%25-brightgreen)](doc/coverage/index.html)
 [![scicov](https://img.shields.io/badge/scicov-10-ff69b4)](doc/coverage/index.html)
 
 ## Inhaltsverzeichnis
 
 - [Überblick](#überblick)
-- [Kernfeature: C++-SAT-Solver](#kernfeature-c-sat-solver)
+- [Schnellstart](#schnellstart)
+- [Feature: C++-SAT-Solver](#feature-c-sat-solver)
 - [Reduktionskette](#reduktionskette)
 - [Projektstruktur](#projektstruktur)
 - [Voraussetzungen](#voraussetzungen)
@@ -19,6 +20,16 @@ Python-Modelle ökonomischer Entscheidungsprobleme treffen hier auf einen leistu
 - [Verwendung](#verwendung)
 - [Schnittstelle zum Subgraph-Programm](#schnittstelle-zum-subgraph-programm)
 - [Anbindung des C++-Solvers](#anbindung-des-c-solvers)
+  - [Aufbau der Brücke](#aufbau-der-brücke)
+  - [Shim bauen](#shim-bauen)
+  - [Bibliotheksdatei je Plattform](#bibliotheksdatei-je-plattform)
+  - [Laden der Bibliothek](#laden-der-bibliothek)
+  - [Umgebungsvariablen](#umgebungsvariablen)
+  - [Subgraph-Programm](#subgraph-programm)
+  - [Beispiel](#beispiel)
+  - [Fehlersuche](#fehlersuche)
+  - [Ausblick: plattformneutrales Laden](#ausblick-plattformneutrales-laden)
+- [Experimente](#experimente)
 - [Tests](#tests)
 - [Wissenschaftlicher Hintergrund](#wissenschaftlicher-hintergrund)
 - [Erwerb](#erwerb)
@@ -37,7 +48,28 @@ Alle ökonomischen Algorithmen sprechen die Schnittstelle `SatBackend` an. Dadur
 
 Die Aussagen der Arbeit sind zum Teil konditional, das heißt, sie gelten unter einer Effizienzhypothese für den SAT-Entscheider. Dieses Repository führt keinen Beweis für diese Hypothesen. Es setzt die Konstruktionen um, zählt Entscheideraufrufe und erlaubt Messungen auf kleinen und mittleren Instanzen.
 
-## Kernfeature: C++-SAT-Solver
+## Schnellstart
+
+**Ohne C++ (nur Python, genügt für alle Modelle und Tests):**
+
+```bash
+git clone https://github.com/naphez86/subgraph-sat-solver-econ.git
+cd subgraph-sat-solver-econ
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+pytest
+```
+
+**Mit dem nativen C++-Solver:** zusätzlich werden CMake, ein C++17-Compiler und ein Checkout von `subgraph-sat-solver` benötigt. Die Bibliothek wird **bewusst vorab und ausdrücklich** gebaut, nicht automatisch beim ersten Gebrauch. Die Schritte stehen im Abschnitt [Anbindung des C++-Solvers](#anbindung-des-c-solvers), in Kurzform:
+
+```python
+from src.native import build_shim, NativeLibrary, NativeBackend
+
+shim_path = build_shim("build", solver_dir="../subgraph-sat-solver")   # einmal bauen
+backend = NativeBackend(NativeLibrary.load(shim_path))                 # laden und nutzen
+```
+
+## Feature: C++-SAT-Solver
 
 Das zentrale Rechen-Backend ist [`subgraph-sat-solver`](https://github.com/naphez86/subgraph-sat-solver): ein eigenständiges C++17-Projekt, das eine CNF-Formel nicht mit einem eingebetteten Python-SAT-Verfahren löst, sondern sie in einer expliziten Reduktionskette an einen Subgraph-Entscheider weitergibt. Die ökonomischen Modelle in diesem Repository erzeugen die SAT-Formeln; die C++-Bibliothek `satlib` und das Programm `SubgraphSATSolver` bilden den leistungsfähigen nativen Solver-Kern.
 
@@ -73,46 +105,13 @@ Der SAT-Solver kann auch eigenständig mit einer DIMACS-Datei verwendet werden. 
   --stats
 ```
 
-Die Optionen entsprechen der CLI des SAT-Solver-Projekts. Ein vollständiger Aufruf dieser CLI mit dem Subgraph-Programm ist in der aktuellen Windows-Umgebung noch nicht end-to-end verifiziert; die vorhandenen Integrationstests prüfen separat die SAT-Testsuite, die Subgraph-Testsuite und das Subgraph-CLI.
+Die Optionen entsprechen der CLI des SAT-Solver-Projekts.
 
 In einem eigenen C++-Projekt kann `satlib` als statische Bibliothek eingebunden werden. Die öffentliche API liegt in `SubgraphSATSolver.h`: `CNFFormula` repräsentiert die Eingabe, `SATSolverConfig` konfiguriert Subgraph-Programm, temporäres Verzeichnis, Validierung und Ausgaben, und `SubgraphSATSolver::solve_formula` liefert `SAT`, `UNSAT`, `UNKNOWN` oder `SAT_ERROR` samt optionalem Modell und Metriken. Der SAT-Solver-Checkout enthält Build- und API-Beispiele.
 
 ### Verwendung aus den ökonomischen Python-Modellen
 
-Die Python-Modelle erzeugen Formeln des Typs `Cnf`; die gemeinsame Schnittstelle `SatBackend` ist so ausgelegt, dass dafür auch der native C++-Entscheider genutzt werden kann. [`src/native.py`](./src/native.py) enthält den ctypes-Wrapper `NativeBackend`, und `src/native/wsat_shim.cpp` stellt dafür den C-ABI-Einstieg `wsat_solve` bereit. Um den Shim im aktuellen Layout manuell mit CMake zu bauen, aus dem Repository-Wurzelverzeichnis:
-
-```powershell
-cmake -S src/native -B build `
-  -DSUBGRAPH_SAT_SOLVER_DIR=..\subgraph-sat-solver `
-  -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release -j 4
-```
-
-Anschließend die erzeugte `wsat_shim.dll` mit ihrem tatsächlichen Pfad laden. Der Python-Helper `build_shim()` ist derzeit wegen eines Pfadfehlers nicht verwendbar: Er sucht das CMake-Projekt unter `<repo>\native`, obwohl es unter `src\native` liegt. Außerdem muss der Shim den externen Subgraph-Entscheider ausführen können.
-
-```python
-from src.auctions import Bid, solve_wdp
-from src.native import NativeBackend, NativeLibrary
-
-library = NativeLibrary.load(r"C:\path\to\wsat_shim.dll")
-backend = NativeBackend(
-    library,
-    subgraph_binary=r"C:\path\to\subgraph.exe",
-    work_dir=r"C:\Temp\wsat",
-    timeout_sec=60,
-)
-try:
-    bids = [
-        Bid(frozenset({0, 1}), 4, agent=0),
-        Bid(frozenset({2}), 2, agent=1),
-    ]
-    result = solve_wdp(bids, backend)
-    print(result.revenue, result.winners)
-finally:
-    backend.close()
-```
-
-Der Wrapper validiert ein vom nativen Solver geliefertes Modell erneut mit der ursprünglichen Python-CNF und übersetzt `UNSAT` in `None`; `UNKNOWN` und Fehler werden als `BackendError` sichtbar gemacht. Die vorhandenen Tests bauen den Shim nicht und führen die Python-zu-C++-Bridge nicht end-to-end aus. Die Integrationstests in [`tests/test_native_integration.py`](./tests/test_native_integration.py) führen stattdessen die kompilierten SAT- und Subgraph-C++-Testsuiten sowie das Subgraph-CLI aus. Die direkte SAT-zu-Subgraph-End-to-End-Ausführung über `SubgraphSATSolver.exe` ist damit noch nicht durch diese Tests abgesichert.
+Die Python-Modelle erzeugen Formeln des Typs `Cnf`; die gemeinsame Schnittstelle `SatBackend` erlaubt es, dafür den nativen C++-Entscheider zu nutzen. Die Brücke besteht aus dem ctypes-Wrapper `NativeBackend` in [`src/native.py`](./src/native.py) und dem C-ABI-Shim `src/native/wsat_shim.cpp` (Einstieg `wsat_solve`). Bauen, Laden, Konfiguration und Fehlersuche stehen im Abschnitt [Anbindung des C++-Solvers](#anbindung-des-c-solvers).
 
 ## Reduktionskette
 
@@ -153,9 +152,11 @@ Auktionsprobleme besitzen zusätzlich eine direkte Reduktion auf Clique (Kompati
 | `src/native/wsat_shim.h`, `src/native/wsat_shim.cpp` | C-Schnittstelle (`wsat_solve`) um die C++-Bibliothek des Subgraph-SAT-Solvers |
 | `src/native/CMakeLists.txt` | Build des Shims als Shared Library `wsat_shim` |
 | `src/solver.py` | Eigenständiger DPLL-Löser als Python-Referenz und unabhängiges Vergleichs-Backend |
-| `src/native/subgraph_sat_solver_shim.cpp` | Altbestand früherer Versionen; nicht Teil des aktuellen CMake-Builds |
+| `src/experiments.py` | Reproduzierbare Messungen: native C++-Kette gegen DPLL-Referenz, JSON-Rohdaten und PDF-Abbildungen |
+| `src/results/` | Ergebnisse der Experimente: JSON je Problemfamilie, `manifest.json` und die Abbildungen als PDF |
 | `tests/` | Testdateien je Modul |
 | `science/subgraph-sat-solver-econ.tex`, `.pdf` | Wissenschaftliche Arbeit (Quelltext und PDF) |
+| `doc/coverage/` | HTML-Bericht der Testabdeckung |
 | `pyproject.toml` | Projektmetadaten sowie pytest- und Coverage-Konfiguration |
 | `LICENSE` | Lizenzbedingungen |
 
@@ -164,7 +165,8 @@ Auktionsprobleme besitzen zusätzlich eine direkte Reduktion auf Clique (Kompati
 - Python ab Version 3.11
 - Für die Python-Module (`cnf`, `circuits`, `backends`, `reduction`, `oracle`, `foundation` und alle Anwendungsmodule) wird ausschließlich die Standardbibliothek benötigt.
 - Für Tests: `pytest` und `pytest-cov`
-- Nur für die Anbindung des C++-Solvers: CMake ab Version 3.16, ein Compiler mit C++17-Unterstützung und ein Checkout des Projekts subgraph-sat-solver (Dateien `Cnf.cpp`, `Reduction.cpp`, `SubgraphSATSolver.cpp` und `SubgraphSATSolver.h`)
+- Für die Abbildungen der Experimente: `matplotlib`
+- Nur für die Anbindung des C++-Solvers (siehe [Anbindung des C++-Solvers](#anbindung-des-c-solvers)): CMake ab Version 3.16, ein Compiler mit C++17-Unterstützung und ein Checkout des Projekts subgraph-sat-solver (Dateien `Cnf.cpp`, `Reduction.cpp`, `SubgraphSATSolver.cpp` und `SubgraphSATSolver.h`). Ohne diese Teile laufen alle Python-Module, Tests mit Python-Entscheidern und die Beispiele unverändert.
 
 ## Installation
 
@@ -178,7 +180,7 @@ pip install -e ".[dev]"
 
 Unter Windows wird das Virtual Environment mit `.venv\Scripts\activate` aktiviert.
 
-`pyproject.toml` deklariert die Abhängigkeiten `numpy` und `subgraph`. Der Quellcode des Projekts importiert beide derzeit nicht, der exakte Entscheider ist in `src/oracle.py` enthalten. Zum reinen Ausführen der Beispiele genügt Python.
+`pyproject.toml` deklariert die Abhängigkeiten `numpy` und `matplotlib`. Matplotlib erzeugt die Abbildungen der [Experimente](#experimente). Der exakte Subgraph-Entscheider ist in `src/oracle.py` enthalten, zum Ausführen der Beispiele genügt Python.
 
 Die Module liegen flach unter `src/` und werden aus dem Wurzelverzeichnis des Repositories über das Paket `src` importiert, zum Beispiel `from src.backends import DpllBackend`. Alle Beispiele dieser README sind von dort aus auszuführen.
 
@@ -470,7 +472,177 @@ Ausgabe (`output.json`): Das Programm beendet sich mit Exit-Code 0 und schreibt 
 
 ## Anbindung des C++-Solvers
 
-Die Architektur, die CMake-Build-Anleitung und ein Python-Beispiel sind im Abschnitt [Kernfeature: C++-SAT-Solver](#kernfeature-c-sat-solver) beschrieben. Dort sind auch der aktuelle Stand des Shims und die Abgrenzung der vorhandenen C++-Integrationstests dokumentiert.
+Dieser Abschnitt beschreibt, wie die Python-Modelle den nativen C++-Solver aufrufen: wie die Bibliothek gebaut, gefunden und geladen wird und was bei Problemen zu prüfen ist. Die Messungen mit dem nativen Solver stehen im Abschnitt [Experimente](#experimente).
+
+### Aufbau der Brücke
+
+```
+Python-Modell → SatBackend → NativeBackend (ctypes) → wsat_shim (C-ABI) → satlib (C++) → Subgraph-Programm (eigener Prozess)
+                                  src/native.py        src/native/wsat_shim.*   subgraph-sat-solver   Orakel oder csubgraph
+```
+
+| Schicht | Aufgabe |
+|---------|---------|
+| `NativeBackend` | Entscheider hinter `SatBackend`; prüft jedes Modell erneut gegen die Python-`Cnf`, übersetzt `UNSAT` in `None`, macht `UNKNOWN` und Fehler als `BackendError` sichtbar |
+| `NativeLibrary` | Lädt die Shim-Bibliothek per `ctypes` und prüft die ABI-Version (`wsat_abi_version`, aktuell `1`) |
+| `wsat_shim` | Dünne C-Schnittstelle (`wsat_solve`, `wsat_abi_version`). Es werden keine C++-Typen und keine Ausnahmen über die Grenze gereicht |
+| `satlib` | C++-Bibliothek des Projekts `subgraph-sat-solver`; sie wird nicht kopiert, sondern aus einem Checkout in den Shim eingebunden |
+| Subgraph-Programm | Wird vom Solver als eigener Prozess gestartet, siehe [Schnittstelle zum Subgraph-Programm](#schnittstelle-zum-subgraph-programm) |
+
+Python kann eine C++-Bibliothek nicht direkt nutzen: `ctypes` lädt nur fertig gebaute dynamische Bibliotheken mit C-Funktionen. Deshalb gibt es den Shim, und deshalb muss er vor der ersten Nutzung gebaut sein.
+
+### Shim bauen
+
+Der Shim wird **ausdrücklich vorab** gebaut und nicht automatisch beim ersten Gebrauch. Das ist Absicht: Messungen sollen reproduzierbar sein, daher sind Compiler, Build-Typ (`Release`) und Solver-Version bekannt und dokumentierbar. Ein automatischer Build im Hintergrund würde das verdecken und könnte mitten in einer Messung scheitern.
+
+**Empfohlen: über Python.** Der Helper `build_shim()` führt beide CMake-Schritte aus und gibt den Pfad der erzeugten Bibliothek zurück. Er funktioniert auf allen Plattformen gleich:
+
+```python
+from src.native import build_shim
+
+shim_path = build_shim("build", solver_dir="../subgraph-sat-solver")
+print(shim_path)
+```
+
+Optional kann ein CMake-Generator übergeben werden (`cmake_generator="Ninja"`).
+
+**Alternativ: CMake von Hand**, aus dem Repository-Wurzelverzeichnis (die Solver-Quellen liegen hier neben diesem Repository):
+
+```bash
+# Linux, macOS, Git Bash
+cmake -S src/native -B build \
+  -DSUBGRAPH_SAT_SOLVER_DIR=../subgraph-sat-solver \
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release -j 4
+```
+
+```powershell
+# Windows PowerShell
+cmake -S src/native -B build `
+  -DSUBGRAPH_SAT_SOLVER_DIR=..\subgraph-sat-solver `
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release -j 4
+```
+
+Die Solver-Quellen (`Cnf.cpp`, `Reduction.cpp`, `SubgraphSATSolver.cpp`, `SubgraphSATSolver.h`) werden gesucht in dieser Reihenfolge: übergebener Pfad, Umgebungsvariable `SUBGRAPH_SAT_SOLVER_DIR`, `third_party/subgraph-sat-solver`. Fehlen sie, bricht CMake mit einer Meldung ab, die den erwarteten Pfad nennt.
+
+### Bibliotheksdatei je Plattform
+
+Der Dateiname hängt vom Betriebssystem und von der Toolchain ab. `library_filename()` in `src/native.py` wählt den Namen nach der Plattform; `build_shim()` kennt zusätzlich den MinGW-Fall unter Windows.
+
+| Plattform | Toolchain | Dateiname |
+|-----------|-----------|-----------|
+| Windows | MSVC | `wsat_shim.dll` |
+| Windows | MinGW | `libwsat_shim.dll` |
+| Linux | GCC, Clang | `libwsat_shim.so` |
+| macOS | Clang | `libwsat_shim.dylib` |
+
+Das sind drei Binärformate mit eigenen Lademechanismen des Betriebssystems, nicht nur drei Namen. Alle plattformabhängigen Teile (Dateiname, Export-Markierung im Header `wsat_shim.h`, Suchpfade für Abhängigkeiten) sind in `src/native.py` und `src/native/` gebündelt. Der übrige Code ist plattformneutral.
+
+### Laden der Bibliothek
+
+`NativeLibrary.load()` sucht die fertig gebaute Datei in dieser Reihenfolge und nimmt den ersten Treffer:
+
+1. der an `load()` übergebene Pfad,
+2. die Umgebungsvariable `WSAT_SHIM_PATH`,
+3. `build/<Dateiname>` im Repository-Wurzelverzeichnis (siehe Tabelle oben).
+
+Wird nichts gefunden, löst `NativeLibrary.load()` die Ausnahme `NativeUnavailable` aus. Es erfolgt kein automatischer Build und kein stiller Rückfall auf Python. Unter Windows nimmt `NativeLibrary` zusätzlich alle Verzeichnisse aus `PATH` in die DLL-Suche auf (`os.add_dll_directory`), damit abhängige DLLs gefunden werden. Danach wird `wsat_abi_version()` gegen die erwartete Version geprüft.
+
+### Umgebungsvariablen
+
+| Variable | Wirkung | Standard |
+|----------|---------|----------|
+| `SUBGRAPH_SAT_SOLVER_DIR` | Checkout des SAT-Solvers (Quellen für den Shim-Build) | `third_party/subgraph-sat-solver` |
+| `WSAT_SHIM_PATH` | Pfad der gebauten Shim-Bibliothek | `build/<Dateiname>` |
+| `SUBGRAPH_ORACLE_TIME_LIMIT` | Zeitlimit des Python-Orakels in Sekunden | keines |
+| `SUBGRAPH_SAT_SOLVER_BUILD_DIR` | Build-Verzeichnis des SAT-Solvers für die Integrationstests | `../subgraph-sat-solver/build` |
+| `CSUBGRAPH_BUILD_DIR` | Build-Verzeichnis von csubgraph für die Integrationstests | `../csubgraph/build` |
+
+Die Experimente setzen für ihre Dauer zusätzlich `SUBGRAPH_MODE=exact` und `SUBGRAPH_TIMEOUT_SEC` (aus `--timeout-sec`) und stellen die vorherigen Werte danach wieder her.
+
+### Subgraph-Programm
+
+Der native Solver startet das Subgraph-Programm als eigenen Prozess. Welches Programm benutzt wird, bestimmt `NativeBackend`:
+
+- **Standard** (`subgraph_binary=None`): `NativeBackend` erzeugt im Arbeitsverzeichnis ein Startskript für das exakte Python-Orakel aus `src/oracle.py`. Das Skript ist ein Shebang-Skript und daher für Linux und macOS gedacht. Unter Windows sollte stattdessen ein ausführbares Programm explizit angegeben werden (nicht auf diesem System geprüft).
+- **Explizit** (`subgraph_binary=...`): zum Beispiel das schnelle C++-Programm `subgraph` aus `csubgraph` (unter Windows `subgraph.exe`). Es muss die [beschriebene Schnittstelle](#schnittstelle-zum-subgraph-programm) erfüllen.
+
+### Beispiel
+
+```python
+from pathlib import Path
+from src.auctions import Bid, solve_wdp
+from src.native import NativeBackend, NativeLibrary
+
+library = NativeLibrary.load()        # Suchreihenfolge siehe oben; oder load(Pfad)
+backend = NativeBackend(
+    library,
+    # subgraph_binary=Path("../csubgraph/build/subgraph"),   # optional, Standard: Python-Orakel
+    work_dir=Path("work/wsat"),
+    timeout_sec=60,
+)
+try:
+    bids = [
+        Bid(frozenset({0, 1}), 4, agent=0),
+        Bid(frozenset({2}), 2, agent=1),
+    ]
+    result = solve_wdp(bids, backend)
+    print(result.revenue, result.winners)
+finally:
+    backend.close()
+```
+
+Der Wrapper validiert ein vom nativen Solver geliefertes Modell erneut mit der ursprünglichen Python-`Cnf` und übersetzt `UNSAT` in `None`; `UNKNOWN` und Fehler werden als `BackendError` sichtbar gemacht. Die Python-zu-C++-Brücke wird von den [Experimenten](#experimente) vollständig ausgeführt: Jede Instanz wird mit `NativeBackend` und mit der DPLL-Referenz gelöst, und die Ergebnisse werden verglichen. Die Integrationstests in [`tests/test_native_integration.py`](./tests/test_native_integration.py) führen die kompilierten SAT- und Subgraph-C++-Testsuiten sowie das Subgraph-CLI aus.
+
+### Fehlersuche
+
+| Meldung | Wahrscheinliche Ursache | Abhilfe |
+|---------|-------------------------|---------|
+| `Shim-Bibliothek nicht gefunden; bauen mit build_shim() …` | Shim noch nicht gebaut oder an anderem Ort | `build_shim()` ausführen oder Pfad an `load()` bzw. `WSAT_SHIM_PATH` übergeben |
+| `Solver-Quellen nicht gefunden` (Python) oder `Solver-Quelle nicht gefunden: …` (CMake) | Checkout von `subgraph-sat-solver` fehlt oder liegt woanders | `solver_dir=…` übergeben oder `SUBGRAPH_SAT_SOLVER_DIR` setzen |
+| `cmake nicht gefunden` | CMake nicht im `PATH` | CMake ab Version 3.16 installieren |
+| `Build des Shims fehlgeschlagen` | Compiler fehlt oder unterstützt C++17 nicht | Ausgabe der Fehlermeldung lesen, Compiler prüfen, ggf. `cmake_generator` setzen |
+| `Bibliothek nicht erzeugt: …` | Datei liegt woanders, als erwartet (bei Mehrkonfigurations-Generatoren wie Visual Studio kann sie in einem Unterordner wie `build/Release` liegen; nicht auf jedem System geprüft) | Tatsächlichen Pfad suchen und an `load()` übergeben |
+| `Bibliothek nicht ladbar: …` | Falsche Architektur (32 gegen 64 Bit), fehlende abhängige DLL oder `.so`, unter Windows häufig die MinGW-Laufzeit (`libstdc++-6.dll`) | Bibliothek und Python mit gleicher Architektur nutzen; Verzeichnis der Abhängigkeiten in `PATH` aufnehmen; denselben Compiler wie beim Bauen verwenden |
+| `ABI-Version des Shims passt nicht` | Shim stammt aus einem anderen Stand dieses Repositories | Shim neu bauen |
+| `C++-Solver: UNKNOWN` oder `ERROR` (`BackendError`) | Zeitlimit des Subgraph-Programms, Subgraph-Programm nicht startbar oder Fehler darin | `timeout_sec` erhöhen, Pfad und Rechte von `subgraph_binary` prüfen |
+
+MSVC- und MinGW-Bibliotheken sollten nicht gemischt werden, weil ihre C++-Laufzeiten nicht zusammenpassen.
+
+### Ausblick: plattformneutrales Laden
+
+Die oben beschriebenen Plattformunterschiede (Dateiname, Export-Markierung, Suchpfade, Fehlermeldungen) betreffen nicht dieses Projekt allein. Der Vorschlag [A Unified Shared Library Format (`.sl`) with a Standardized Loading Procedure](https://github.com/naphez86/blog/blob/main/unified-shared-library-proposal.md) beschreibt, wie ein einheitliches Format und vor allem ein standardisiertes, betriebssystemunabhängiges Ladeverfahren (eine Suchreihenfolge, ein Fehlermodell, ein Lebenszyklus) diese Teile aus jedem Projekt entfernen könnten.
+
+Das ist ein Diskussionsvorschlag. In diesem Repository ist er **nicht umgesetzt**; es gilt der in diesem Abschnitt beschriebene Stand mit den Dateien `.dll`, `.so` und `.dylib`.
+
+## Experimente
+
+`src/experiments.py` erzeugt je Problemfamilie zufällige Instanzen mit festem Seed und löst jede Instanz einmal mit `NativeBackend` (C++-Bibliothek `satlib` über den Shim und das externe Subgraph-Programm) und einmal mit der Python-`DpllBackend`-Referenz. Die Familien sind Auktionen, Frequenzzuteilung (`repacking`), Terminplanung, Standortplanung, Nierenaustausch und Kemeny-Rangaggregation. Optimalwerte und Zeugen beider Entscheider werden verglichen; bei einer Abweichung bricht der Lauf ab. Fehlende native Komponenten oder fehlgeschlagene native Antworten sind Fehler und werden nie durch den Python-Entscheider ersetzt.
+
+Voraussetzungen sind CMake, ein C++17-Compiler, ein Checkout von `subgraph-sat-solver` und das gebaute Subgraph-Programm. Standardmäßig werden `../subgraph-sat-solver` und `../csubgraph/build/subgraph.exe` verwendet; unter Linux und macOS heißt das Programm ohne `.exe`, dort ist `--subgraph-binary` anzugeben. Der Shim wird bei jedem Lauf unter `build/experiment-native` neu gebaut. So sind Compiler und Build-Typ jedes Laufs eindeutig (siehe [Shim bauen](#shim-bauen)).
+
+```bash
+python -m src.experiments
+python -m src.experiments --repetitions 5 --timeout-sec 120 --seed 42
+python -m src.experiments --solver-dir ../subgraph-sat-solver --subgraph-binary ../csubgraph/build/subgraph.exe
+```
+
+| Option | Standard | Bedeutung |
+|--------|----------|-----------|
+| `--seed` | `20261013` | Basis-Seed der Instanzerzeugung |
+| `--repetitions` | `3` | Wiederholungen je Instanzgröße |
+| `--timeout-sec` | `60` | Zeitlimit des Subgraph-Programms in Sekunden |
+| `--solver-dir` | `../subgraph-sat-solver` | Checkout des SAT-Solvers |
+| `--subgraph-binary` | `../csubgraph/build/subgraph.exe` | Pfad des Subgraph-Programms (unter Linux und macOS ohne `.exe`) |
+
+Alle Ausgaben liegen in `src/results/`:
+
+- eine JSON-Datei je Problemfamilie (zum Beispiel `auctions.json`) mit Seeds, Zielfunktionswerten, Aufrufzahlen, CNF-Größen und nativen Phasenzeiten; jede abgeschlossene Instanz wird sofort gespeichert,
+- `manifest.json` mit den Parametern des Laufs,
+- die Abbildungen `experiment_runtime.pdf`, `experiment_formula_size.pdf`, `experiment_native_phases.pdf` und `experiment_completion.pdf`.
+
+Ein Zeitlimit wird als Fehler protokolliert und nicht als `UNSAT` gewertet. Die Auswertung steht im Kapitel „Experimente mit Subgraph-SAT-Solver" der Arbeit.
 
 ## Tests
 
@@ -500,7 +672,8 @@ Zuordnung der Kapitel zu den Modulen:
 | 7 Spiele, Gleichgewichte und kollektive Entscheidungen | `games` |
 | 8 Kryptographie, Zahlungsverkehr und Sicherheit | `crypto` |
 | 9 Wohlfahrtsmodell und Informationsgrenzen | `welfare` |
-| 10 Grenzen, Messplan und Fazit | `backends`, `native`, `oracle` |
+| 10 Experimente mit Subgraph-SAT-Solver | `experiments`, `native` |
+| 11 Grenzen, Messplan und Fazit | `backends`, `native`, `oracle` |
 
 Die Reduktion von 3-SAT auf das Clique-Problem folgt der klassischen Konstruktion der Komplexitätstheorie (Karp, Cook).
 

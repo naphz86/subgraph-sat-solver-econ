@@ -1,0 +1,548 @@
+{
+  "schema_version": 1,
+  "experiment": "auctions",
+  "title": "Combinatorial winner determination",
+  "generated_at_utc": "2026-10-13T09:53:08.634123+00:00",
+  "seed": 20261013,
+  "repetitions": 3,
+  "native_solver": "subgraph-sat-solver via satlib + wsat_shim",
+  "reference_solver": "Python DpllBackend",
+  "records": [
+    {
+      "size": 3,
+      "repetition": 0,
+      "seed": 20261313,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 11,
+          "backend_wall_ms_sum": 1.6942,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 54,
+            "literal_occurrences": 137
+          },
+          "end_to_end_wall_ms": 2.2543,
+          "outcome": {
+            "objective": 25,
+            "feasible": true,
+            "reported_sat_calls": 11
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 11,
+          "backend_wall_ms_sum": 1033.8351,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 54,
+            "literal_occurrences": 137
+          },
+          "native_phase_ms_sum": {
+            "reduction": 13.7871,
+            "subgraph": 1016.1745,
+            "extraction": 0.0961
+          },
+          "end_to_end_wall_ms": 1034.5427,
+          "outcome": {
+            "objective": 25,
+            "feasible": true,
+            "reported_sat_calls": 11
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 3,
+      "repetition": 1,
+      "seed": 20261314,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 11,
+          "backend_wall_ms_sum": 3.0542,
+          "max_query_cnf": {
+            "variables": 28,
+            "clauses": 88,
+            "literal_occurrences": 227
+          },
+          "end_to_end_wall_ms": 3.7113,
+          "outcome": {
+            "objective": 20,
+            "feasible": true,
+            "reported_sat_calls": 11
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 11,
+          "backend_wall_ms_sum": 1080.0467,
+          "max_query_cnf": {
+            "variables": 28,
+            "clauses": 88,
+            "literal_occurrences": 227
+          },
+          "native_phase_ms_sum": {
+            "reduction": 43.731,
+            "subgraph": 1031.0333,
+            "extraction": 0.097
+          },
+          "end_to_end_wall_ms": 1080.8351,
+          "outcome": {
+            "objective": 20,
+            "feasible": true,
+            "reported_sat_calls": 11
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 3,
+      "repetition": 2,
+      "seed": 20261315,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 11,
+          "backend_wall_ms_sum": 2.1965,
+          "max_query_cnf": {
+            "variables": 21,
+            "clauses": 64,
+            "literal_occurrences": 163
+          },
+          "end_to_end_wall_ms": 2.8173,
+          "outcome": {
+            "objective": 20,
+            "feasible": true,
+            "reported_sat_calls": 11
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 11,
+          "backend_wall_ms_sum": 1084.4397,
+          "max_query_cnf": {
+            "variables": 21,
+            "clauses": 64,
+            "literal_occurrences": 163
+          },
+          "native_phase_ms_sum": {
+            "reduction": 21.9642,
+            "subgraph": 1057.858,
+            "extraction": 0.0826
+          },
+          "end_to_end_wall_ms": 1085.0829,
+          "outcome": {
+            "objective": 20,
+            "feasible": true,
+            "reported_sat_calls": 11
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 4,
+      "repetition": 0,
+      "seed": 20261413,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 7.3453,
+          "max_query_cnf": {
+            "variables": 64,
+            "clauses": 210,
+            "literal_occurrences": 548
+          },
+          "end_to_end_wall_ms": 9.5658,
+          "outcome": {
+            "objective": 30,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 1414.2116,
+          "max_query_cnf": {
+            "variables": 64,
+            "clauses": 210,
+            "literal_occurrences": 548
+          },
+          "native_phase_ms_sum": {
+            "reduction": 297.2892,
+            "subgraph": 1105.7634,
+            "extraction": 0.3561
+          },
+          "end_to_end_wall_ms": 1415.7293,
+          "outcome": {
+            "objective": 30,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 4,
+      "repetition": 1,
+      "seed": 20261414,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 4.8186,
+          "max_query_cnf": {
+            "variables": 48,
+            "clauses": 154,
+            "literal_occurrences": 402
+          },
+          "end_to_end_wall_ms": 5.6141,
+          "outcome": {
+            "objective": 32,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 1012.7323,
+          "max_query_cnf": {
+            "variables": 48,
+            "clauses": 154,
+            "literal_occurrences": 402
+          },
+          "native_phase_ms_sum": {
+            "reduction": 149.691,
+            "subgraph": 852.8961,
+            "extraction": 0.1398
+          },
+          "end_to_end_wall_ms": 1014.1747,
+          "outcome": {
+            "objective": 32,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 4,
+      "repetition": 2,
+      "seed": 20261415,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 5.4201,
+          "max_query_cnf": {
+            "variables": 48,
+            "clauses": 156,
+            "literal_occurrences": 406
+          },
+          "end_to_end_wall_ms": 6.2447,
+          "outcome": {
+            "objective": 25,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 1449.7771,
+          "max_query_cnf": {
+            "variables": 48,
+            "clauses": 156,
+            "literal_occurrences": 406
+          },
+          "native_phase_ms_sum": {
+            "reduction": 219.0979,
+            "subgraph": 1217.6201,
+            "extraction": 0.2346
+          },
+          "end_to_end_wall_ms": 1451.3332,
+          "outcome": {
+            "objective": 25,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 5,
+      "repetition": 0,
+      "seed": 20261513,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 14,
+          "backend_wall_ms_sum": 6.3034,
+          "max_query_cnf": {
+            "variables": 62,
+            "clauses": 203,
+            "literal_occurrences": 531
+          },
+          "end_to_end_wall_ms": 7.5337,
+          "outcome": {
+            "objective": 42,
+            "feasible": true,
+            "reported_sat_calls": 14
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 14,
+          "backend_wall_ms_sum": 13008.0522,
+          "max_query_cnf": {
+            "variables": 62,
+            "clauses": 203,
+            "literal_occurrences": 531
+          },
+          "native_phase_ms_sum": {
+            "reduction": 381.1307,
+            "subgraph": 12614.1665,
+            "extraction": 0.253
+          },
+          "end_to_end_wall_ms": 13009.6229,
+          "outcome": {
+            "objective": 42,
+            "feasible": true,
+            "reported_sat_calls": 14
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 5,
+      "repetition": 1,
+      "seed": 20261514,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 6.2326,
+          "max_query_cnf": {
+            "variables": 56,
+            "clauses": 185,
+            "literal_occurrences": 483
+          },
+          "end_to_end_wall_ms": 7.3825,
+          "outcome": {
+            "objective": 14,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 13,
+          "backend_wall_ms_sum": 1309.062,
+          "max_query_cnf": {
+            "variables": 56,
+            "clauses": 185,
+            "literal_occurrences": 483
+          },
+          "native_phase_ms_sum": {
+            "reduction": 209.9181,
+            "subgraph": 1089.7522,
+            "extraction": 0.2813
+          },
+          "end_to_end_wall_ms": 1310.5164,
+          "outcome": {
+            "objective": 14,
+            "feasible": true,
+            "reported_sat_calls": 13
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 5,
+      "repetition": 2,
+      "seed": 20261515,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 14,
+          "backend_wall_ms_sum": 5.2126,
+          "max_query_cnf": {
+            "variables": 30,
+            "clauses": 93,
+            "literal_occurrences": 237
+          },
+          "end_to_end_wall_ms": 6.0688,
+          "outcome": {
+            "objective": 36,
+            "feasible": true,
+            "reported_sat_calls": 14
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 14,
+          "backend_wall_ms_sum": 1096.9935,
+          "max_query_cnf": {
+            "variables": 30,
+            "clauses": 93,
+            "literal_occurrences": 237
+          },
+          "native_phase_ms_sum": {
+            "reduction": 53.0186,
+            "subgraph": 1037.0832,
+            "extraction": 0.1345
+          },
+          "end_to_end_wall_ms": 1098.0739,
+          "outcome": {
+            "objective": 36,
+            "feasible": true,
+            "reported_sat_calls": 14
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 6,
+      "repetition": 0,
+      "seed": 20261613,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 15,
+          "backend_wall_ms_sum": 13.8634,
+          "max_query_cnf": {
+            "variables": 75,
+            "clauses": 248,
+            "literal_occurrences": 648
+          },
+          "end_to_end_wall_ms": 16.0966,
+          "outcome": {
+            "objective": 34,
+            "feasible": true,
+            "reported_sat_calls": 15
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 15,
+          "backend_wall_ms_sum": 1856.2583,
+          "max_query_cnf": {
+            "variables": 75,
+            "clauses": 248,
+            "literal_occurrences": 648
+          },
+          "native_phase_ms_sum": {
+            "reduction": 445.8939,
+            "subgraph": 1394.612,
+            "extraction": 0.3526
+          },
+          "end_to_end_wall_ms": 1858.5089,
+          "outcome": {
+            "objective": 34,
+            "feasible": true,
+            "reported_sat_calls": 15
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 6,
+      "repetition": 1,
+      "seed": 20261614,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 15,
+          "backend_wall_ms_sum": 12.5666,
+          "max_query_cnf": {
+            "variables": 90,
+            "clauses": 302,
+            "literal_occurrences": 792
+          },
+          "end_to_end_wall_ms": 14.3526,
+          "outcome": {
+            "objective": 48,
+            "feasible": true,
+            "reported_sat_calls": 15
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 15,
+          "backend_wall_ms_sum": 7558.4739,
+          "max_query_cnf": {
+            "variables": 90,
+            "clauses": 302,
+            "literal_occurrences": 792
+          },
+          "native_phase_ms_sum": {
+            "reduction": 639.9074,
+            "subgraph": 6897.0095,
+            "extraction": 0.5569
+          },
+          "end_to_end_wall_ms": 7560.8985,
+          "outcome": {
+            "objective": 48,
+            "feasible": true,
+            "reported_sat_calls": 15
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 6,
+      "repetition": 2,
+      "seed": 20261615,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 15,
+          "backend_wall_ms_sum": 14.084,
+          "max_query_cnf": {
+            "variables": 90,
+            "clauses": 298,
+            "literal_occurrences": 781
+          },
+          "end_to_end_wall_ms": 15.7492,
+          "outcome": {
+            "objective": 52,
+            "feasible": true,
+            "reported_sat_calls": 15
+          }
+        },
+        "native_cpp": {
+          "status": "error",
+          "sat_calls": 8,
+          "backend_wall_ms_sum": 96960.4665,
+          "max_query_cnf": {
+            "variables": 89,
+            "clauses": 295,
+            "literal_occurrences": 774
+          },
+          "native_phase_ms_sum": {
+            "reduction": 381.5067,
+            "subgraph": 36455.1482,
+            "extraction": 0.2683
+          },
+          "end_to_end_wall_ms": 96961.3804,
+          "error": "C++-Solver: ERROR: Subgraph binary call failed"
+        }
+      },
+      "equivalence": "not_checked"
+    }
+  ]
+}

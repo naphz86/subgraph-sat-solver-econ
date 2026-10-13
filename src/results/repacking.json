@@ -1,0 +1,552 @@
+{
+  "schema_version": 1,
+  "experiment": "repacking",
+  "title": "Frequency assignment / graph coloring",
+  "generated_at_utc": "2026-10-13T09:53:09.266261+00:00",
+  "seed": 20261013,
+  "repetitions": 3,
+  "native_solver": "subgraph-sat-solver via satlib + wsat_shim",
+  "reference_solver": "Python DpllBackend",
+  "records": [
+    {
+      "size": 3,
+      "repetition": 0,
+      "seed": 20361313,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.0629,
+          "max_query_cnf": {
+            "variables": 9,
+            "clauses": 12,
+            "literal_occurrences": 27
+          },
+          "end_to_end_wall_ms": 0.1194,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 49.7378,
+          "max_query_cnf": {
+            "variables": 9,
+            "clauses": 12,
+            "literal_occurrences": 27
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.1069,
+            "subgraph": 49.4396,
+            "extraction": 0.0073
+          },
+          "end_to_end_wall_ms": 49.7874,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 3,
+      "repetition": 1,
+      "seed": 20361314,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.0824,
+          "max_query_cnf": {
+            "variables": 9,
+            "clauses": 18,
+            "literal_occurrences": 39
+          },
+          "end_to_end_wall_ms": 0.1471,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 47.273,
+          "max_query_cnf": {
+            "variables": 9,
+            "clauses": 18,
+            "literal_occurrences": 39
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.1922,
+            "subgraph": 46.8543,
+            "extraction": 0.0093
+          },
+          "end_to_end_wall_ms": 47.3298,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 3,
+      "repetition": 2,
+      "seed": 20361315,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.071,
+          "max_query_cnf": {
+            "variables": 9,
+            "clauses": 12,
+            "literal_occurrences": 27
+          },
+          "end_to_end_wall_ms": 0.1203,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 40.9652,
+          "max_query_cnf": {
+            "variables": 9,
+            "clauses": 12,
+            "literal_occurrences": 27
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.1115,
+            "subgraph": 40.6957,
+            "extraction": 0.0071
+          },
+          "end_to_end_wall_ms": 41.0096,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 4,
+      "repetition": 0,
+      "seed": 20361413,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1652,
+          "max_query_cnf": {
+            "variables": 12,
+            "clauses": 19,
+            "literal_occurrences": 42
+          },
+          "end_to_end_wall_ms": 0.2311,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 55.1227,
+          "max_query_cnf": {
+            "variables": 12,
+            "clauses": 19,
+            "literal_occurrences": 42
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.2211,
+            "subgraph": 54.6276,
+            "extraction": 0.0096
+          },
+          "end_to_end_wall_ms": 55.3172,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 4,
+      "repetition": 1,
+      "seed": 20361414,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.0959,
+          "max_query_cnf": {
+            "variables": 12,
+            "clauses": 22,
+            "literal_occurrences": 48
+          },
+          "end_to_end_wall_ms": 0.1623,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 50.0684,
+          "max_query_cnf": {
+            "variables": 12,
+            "clauses": 22,
+            "literal_occurrences": 48
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.2595,
+            "subgraph": 49.5246,
+            "extraction": 0.0087
+          },
+          "end_to_end_wall_ms": 50.1295,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 4,
+      "repetition": 2,
+      "seed": 20361415,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1471,
+          "max_query_cnf": {
+            "variables": 12,
+            "clauses": 22,
+            "literal_occurrences": 48
+          },
+          "end_to_end_wall_ms": 0.2186,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 47.0544,
+          "max_query_cnf": {
+            "variables": 12,
+            "clauses": 22,
+            "literal_occurrences": 48
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.2781,
+            "subgraph": 46.6185,
+            "extraction": 0.0106
+          },
+          "end_to_end_wall_ms": 47.1143,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 5,
+      "repetition": 0,
+      "seed": 20361513,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1062,
+          "max_query_cnf": {
+            "variables": 15,
+            "clauses": 23,
+            "literal_occurrences": 51
+          },
+          "end_to_end_wall_ms": 0.1797,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 50.0075,
+          "max_query_cnf": {
+            "variables": 15,
+            "clauses": 23,
+            "literal_occurrences": 51
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.302,
+            "subgraph": 49.4359,
+            "extraction": 0.0121
+          },
+          "end_to_end_wall_ms": 50.07,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 5,
+      "repetition": 1,
+      "seed": 20361514,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1335,
+          "max_query_cnf": {
+            "variables": 15,
+            "clauses": 29,
+            "literal_occurrences": 63
+          },
+          "end_to_end_wall_ms": 0.2282,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 53.0739,
+          "max_query_cnf": {
+            "variables": 15,
+            "clauses": 29,
+            "literal_occurrences": 63
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.5212,
+            "subgraph": 52.2027,
+            "extraction": 0.011
+          },
+          "end_to_end_wall_ms": 53.1452,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 5,
+      "repetition": 2,
+      "seed": 20361515,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1093,
+          "max_query_cnf": {
+            "variables": 15,
+            "clauses": 23,
+            "literal_occurrences": 51
+          },
+          "end_to_end_wall_ms": 0.1789,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 48.7969,
+          "max_query_cnf": {
+            "variables": 15,
+            "clauses": 23,
+            "literal_occurrences": 51
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.3047,
+            "subgraph": 48.3205,
+            "extraction": 0.0099
+          },
+          "end_to_end_wall_ms": 48.8575,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 6,
+      "repetition": 0,
+      "seed": 20361613,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1424,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 39,
+            "literal_occurrences": 84
+          },
+          "end_to_end_wall_ms": 0.3164,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 52.6868,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 39,
+            "literal_occurrences": 84
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.7266,
+            "subgraph": 51.5864,
+            "extraction": 0.0166
+          },
+          "end_to_end_wall_ms": 52.7738,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 6,
+      "repetition": 1,
+      "seed": 20361614,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1313,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 36,
+            "literal_occurrences": 78
+          },
+          "end_to_end_wall_ms": 0.3744,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 56.6268,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 36,
+            "literal_occurrences": 78
+          },
+          "native_phase_ms_sum": {
+            "reduction": 0.6955,
+            "subgraph": 55.5774,
+            "extraction": 0.0129
+          },
+          "end_to_end_wall_ms": 56.7081,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    },
+    {
+      "size": 6,
+      "repetition": 2,
+      "seed": 20361615,
+      "backends": {
+        "dpll": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 0.1444,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 51,
+            "literal_occurrences": 108
+          },
+          "end_to_end_wall_ms": 0.2755,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        },
+        "native_cpp": {
+          "status": "ok",
+          "sat_calls": 1,
+          "backend_wall_ms_sum": 53.9313,
+          "max_query_cnf": {
+            "variables": 18,
+            "clauses": 51,
+            "literal_occurrences": 108
+          },
+          "native_phase_ms_sum": {
+            "reduction": 1.2518,
+            "subgraph": 52.2818,
+            "extraction": 0.0153
+          },
+          "end_to_end_wall_ms": 54.0231,
+          "outcome": {
+            "objective": 1,
+            "feasible": true,
+            "reported_sat_calls": 1
+          }
+        }
+      },
+      "equivalence": "matched"
+    }
+  ]
+}
