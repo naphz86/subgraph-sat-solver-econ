@@ -16,7 +16,7 @@ Python-Implementierung der Konstruktionen aus der wissenschaftlichen Arbeit „W
 - [Tests](#tests)
 - [Bekannte Einschränkungen](#bekannte-einschränkungen)
 - [Wissenschaftlicher Hintergrund](#wissenschaftlicher-hintergrund)
-- [Lizenz](#lizenz)
+- [Erwerb](#erwerb)
 
 ## Überblick
 
@@ -475,6 +475,12 @@ Zuordnung der Kapitel zu den Modulen:
 
 Die Reduktion von 3-SAT auf das Clique-Problem folgt der klassischen Konstruktion der Komplexitätstheorie (Karp, Cook).
 
-## Lizenz
+## Erwerb
 
-Die Software steht unter den Bedingungen der Datei `LICENSE`: Mit dem Kauf wird ein nicht-exklusives Recht zur Nutzung für den eigenen Gebrauch eingeräumt. Unterlizenzierung, Vermietung und Weiterverkauf sind untersagt. Die Software darf nicht kopiert, dekompiliert oder verändert werden. Sie wird ohne Gewährleistung bereitgestellt, die Haftung für indirekte Schäden ist ausgeschlossen, soweit gesetzlich zulässig. Es gilt das Recht von Deutschland.
+Der Preis für diese Software beträgt 4.945.000,00 EUR.
+
+### Zahlungsinformationen
+
+Name: Stephan Epp  
+IBAN: DE24 5003 1900 0012 5603 20
+BIC: BBVADEFFXXX
