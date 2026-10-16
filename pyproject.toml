@@ -22,6 +22,15 @@ dev = [
     "coverage",
 ]
 
+[tool.setuptools]
+# Das Verzeichnis `src` ist selbst das Paket. Ohne diese Abbildung verteilt setuptools
+# die Module (welfare.py, backends.py, ...) als lose Top-Level-Module in site-packages.
+packages = ["subgraph_sat_solver_econ"]
+package-dir = { subgraph_sat_solver_econ = "src" }
+
+[tool.setuptools.package-data]
+subgraph_sat_solver_econ = ["native/*"]
+
 [tool.coverage.run]
 source = ["src"]
 branch = true
