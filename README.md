@@ -28,7 +28,7 @@ Python-Modelle ökonomischer Entscheidungsprobleme treffen hier auf einen leistu
   - [Subgraph-Programm](#subgraph-programm)
   - [Beispiel](#beispiel)
   - [Fehlersuche](#fehlersuche)
-  - [Ausblick: plattformneutrales Laden](#ausblick-plattformneutrales-laden)
+  - [Ausblick: Plattformneutrales Laden](#ausblick-plattformneutrales-laden)
 - [Experimente](#experimente)
 - [Tests](#tests)
 - [Wissenschaftlicher Hintergrund](#wissenschaftlicher-hintergrund)
@@ -610,7 +610,7 @@ Der Wrapper validiert ein vom nativen Solver geliefertes Modell erneut mit der u
 
 MSVC- und MinGW-Bibliotheken sollten nicht gemischt werden, weil ihre C++-Laufzeiten nicht zusammenpassen.
 
-### Ausblick: plattformneutrales Laden
+### Ausblick: Plattformneutrales Laden
 
 Die oben beschriebenen Plattformunterschiede (Dateiname, Export-Markierung, Suchpfade, Fehlermeldungen) betreffen nicht dieses Projekt allein. Der Vorschlag [A Unified Shared Library Format (`.sl`) with a Standardized Loading Procedure](https://github.com/naphz86/blog/blob/main/unified-shared-library-proposal.md) beschreibt, wie ein einheitliches Format und vor allem ein standardisiertes, betriebssystemunabhängiges Ladeverfahren (eine Suchreihenfolge, ein Fehlermodell, ein Lebenszyklus) diese Teile aus jedem Projekt entfernen könnten.
 
